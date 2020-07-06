@@ -1,0 +1,6 @@
+https://scikit-image.org/docs/stable/auto_examples/color_exposure/plot_rgb_to_gray.html#sphx-glr-auto-examples-color-exposure-plot-rgb-to-gray-py
+https://scikit-image.org/docs/stable/auto_examples/edges/plot_contours.html#sphx-glr-auto-examples-edges-plot-contours-py
+https://pypi.org/project/ezdxf/
+https://pypi.org/project/pygcode/
+https://ezdxf.readthedocs.io/en/stable/
+https://github.com/fragmuffin/pygcode/wiki
