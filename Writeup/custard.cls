@@ -245,8 +245,8 @@
     \noindent{\Huge \bfseries Statement 1}
 
     \vspace{5mm}
-    \noindent This thesis is the result of my own investigations, except where
-    otherwise stated.  Other sources are acknowledged by footnotes giving
+    \noindent This dissertation is the result of my own independent investigations, except where
+    otherwise stated.  Other sources are acknowledged by giving
     explicit references.  A bibliography is appended.
 
     \vspace{7mm}
@@ -259,7 +259,7 @@
     \noindent{\Huge \bfseries Statement 2}
 
     \vspace{5mm}
-    \noindent I hereby give my consent for my thesis, if accepted, to be available
+    \noindent I hereby give  consent for my dissertation, if accepted, to be available
     for photocopying and for inter-library loan, and for the title and
     summary to be made available to outside organisations.
 
