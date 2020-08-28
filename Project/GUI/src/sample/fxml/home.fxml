@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+<?import java.net.URL?>
+
+<?import javafx.scene.image.ImageView?>
+<GridPane fx:controller="sample.controllers.Home"
+          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
+    <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
+    <Text id="welcome-text" text="Welcome"
+          GridPane.columnIndex="0" GridPane.rowIndex="0"
+          GridPane.columnSpan="2"/>
+
+    <Label text="File Path:"
+           GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
+    <TextField fx:id="filePath" disable="true"
+               GridPane.columnIndex="1" GridPane.rowIndex="1" promptText="Enter File Path Here"/>
+
+    <HBox spacing="10" alignment="bottom_right"
+          GridPane.columnIndex="2" GridPane.rowIndex="1">
+        <Button text="Search"
+                onAction="#handleFileSearchButton"/>
+    </HBox>
+
+    <ImageView fx:id="imageView" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="2" fitHeight="200" fitWidth="200"/>
+
+    <HBox spacing="10" alignment="bottom_right"
+          GridPane.columnIndex="2" GridPane.rowIndex="2">
+        <Button text="Calibrate"
+                onAction="#handleCalibrateButton"/>
+    </HBox>
+
+
+    <Text fx:id="actiontarget"
+          GridPane.columnIndex="0" GridPane.columnSpan="2"
+          GridPane.halignment="RIGHT" GridPane.rowIndex="6"/>
+
+    <stylesheets>
+        <URL value="@../styles/main.css" />
+    </stylesheets>
+</GridPane>
