@@ -11,14 +11,18 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.image.ImageView;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
 import java.io.File;
-import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.python.core.PyObject;
+import org.python.core.PyString;
+import org.python.util.PythonInterpreter;
 
 public class Home {
     @FXML private TextField filePath;
     @FXML private ImageView imageView;
+    private PythonInterpreter interpreter = new PythonInterpreter();
 
     public void handleFileSearchButton(ActionEvent actionEvent) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../fxml/home.fxml"));
@@ -54,6 +58,10 @@ public class Home {
     }
 
     public void handleCalibrateButton(ActionEvent actionEvent) {
-        
+        try{
+            Process p = Runtime.getRuntime().exec("python ../Simulation.py");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }

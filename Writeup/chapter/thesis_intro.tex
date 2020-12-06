@@ -6,35 +6,55 @@
 	\section{Motivations}
 		\label{sec:intro_motivation} 
 		
-		Large documents can become cumbersome to work with and format consistently. Sensibly chosen aesthetic cues are important to help imply structure and can greatly aid the reader in understanding your work. The accompanying LaTeX template uses abstraction to hide the formatting from the author during content preparation, allowing for consistent styling to be applied automatically during document compilation. In this Google Docs theme it is the responsibility of the author to manually adhere to the styling laid out in this template.
+		The motivations of this thesis were to gain greater understanding of safety critical systems and the methods in which they are developed. This will include the methodology, design, testing and general implementation of a safety critical system. Unlike most software, safety critical systems require far more thought in the design and testing phase due to the danger that could follow an incorrect result or bug. 
 	
 	\subsection{Objective}
 		\label{sec:intro_objective} 
 		
-		In this document we present a tutorial on thesis creation and typesetting, and discuss topics such as literature surveying and proper citation. 
+		This thesis will research the methods and systems used to decrease the chances of a catastrophic errors occuring, the ways to handle the errors or control the system should an unexpected error occur and fail safes should the system not find such an error.
 		
 	\section{Overview}  
 		\label{sec:intro_overview} 
 		
-		The remainder of chapter \ref{chap:intro} outlines the document structure and the key contributions of this work is organized as follows. Chapter \ref{chap:resources} reviews techniques for finding and properly citing external resources from the academic literature and online. In chapter \ref{chap:typesetting} we show examples of how to typeset different types of content, such as internal references, figures, code listings, and tables. And lastly in chapter \ref{chap:conclusion} we summarize the main contributions and key points to take away from this template.
-	
-	\section{Contributions} 
-		\label{sec:intro_contribs} 
+		The remainder of chapter \ref{chap:intro} outlines the document structure and a brief overview of each section.
+
+	\section{Outline} 
+		\label{sec:intro_outline} 
 		
-		The main contributions of this work can be seen as follows:
+		The methodology used for this project is a modified form of scrum for individuals, and hence the main body of the thesis will be broken down into the individual sprints. The structure of the main sections of this work are as follows:
 		
 		\begin{description}	
 		
-			\item[$\bullet$ A LaTeX thesis template]\hfill
+			\item[$\bullet$ Sprint 1 - Background Research]\hfill
 			
-			Modify this document by adding additional TeX files for your top level content chapters. 
+			This section is the first sprint of the project and outlines the reasearch made into the major components of the project.
 			
-			\item[$\bullet$ A typesetting guide of useful primitive elements]\hfill
+			\item[$\bullet$ Sprint 2 - DXF to GCode]\hfill
 			
-			Use the building blocks within this template to typeset each part of your document. Aim to use simple and reusable elements to keep your LaTeX code neat and to make your document consistently styled throughout.
+			This section will discuss the methods and libraries used to convert basic DXF files into basic GCode, the fail-safes added for incompatible files and the testing done on each method.
 			
-			\item[$\bullet$ A review of how to find and cite external resources]\hfill
+			\item[$\bullet$ Sprint 3 - Rasterized image to GCode]\hfill
 						
-			We review techniques and resources for finding and properly citing resources from the prior academic literature and from online resources.
+			This section will discuss the methods and libraries used to convert JPEG and PNG images into basic GCode, the fail-safes added for incompatible files and the testing done on each method.
+
+			\item[$\bullet$ Sprint 4 - Simulation Engine]\hfill
+						
+			This section will discuss the methods and libraries used to create a simulation engine for the 2d pen plotter. The reasons why a simulation was created rather than a physical plotter and the difficulties encountered during this process.
+
+			\item[$\bullet$ Sprint 5 - Integrate Previous Sections]\hfill
+						
+			This section will discuss the methods used to integrate the previous sections into one functioning system backend. This will be a command line based system, requiring basic system testing and some more in depth unit testing.
+
+			\item[$\bullet$ Sprint 6 - GUI]\hfill
+						
+			This section will discuss the methods and libraries used to create a GUI to control the backend and display the results of the previous sections.
+
+			\item[$\bullet$ Sprint 7 - Working Prototype]\hfill
+						
+			This section will discuss the methods and libraries used to convert JPEG and PNG images into basic GCode, the fail-safes added for incompatible files and the testing done on each method.
+
+			\item[$\bullet$ Sprint 8 - System Testing]\hfill
+						
+			This section will discuss the methods and libraries used to convert JPEG and PNG images into basic GCode, the fail-safes added for incompatible files and the testing done on each method.
 			
 		\end{description}

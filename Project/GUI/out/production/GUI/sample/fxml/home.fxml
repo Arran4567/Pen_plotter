@@ -29,7 +29,14 @@
                 onAction="#handleFileSearchButton"/>
     </HBox>
 
-    <ImageView fx:id="imageView" GridPane.columnIndex="0" GridPane.rowIndex="2" fitHeight="200" fitWidth="200"/>
+    <ImageView fx:id="imageView" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="2" fitHeight="200" fitWidth="200"/>
+
+    <HBox spacing="10" alignment="bottom_right"
+          GridPane.columnIndex="2" GridPane.rowIndex="2">
+        <Button text="Calibrate"
+                onAction="#handleCalibrateButton"/>
+    </HBox>
+
 
     <Text fx:id="actiontarget"
           GridPane.columnIndex="0" GridPane.columnSpan="2"
