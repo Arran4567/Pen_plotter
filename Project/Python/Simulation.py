@@ -72,11 +72,12 @@ def resurrect_environment(title):
 
 
 def set_home(t, x, y):
+    global x_home
+    global y_home
     t.showturtle()
     t.setposition(x, y)
     x_home = x
     y_home = y
-    return x, y
 
 
 # In[9]:
@@ -137,7 +138,7 @@ def draw_arc(t, x, y, r, start, end, scale):
 # In[15]:
 
 
-def convert_gcode(t, gcode, scale, x_fix, y_fix):
+def convert_gcode(t, gcode, scale):
     with open(gcode, 'r') as fh:
         for line_text in fh.readlines():
             line = Line(line_text)
@@ -166,6 +167,7 @@ def convert_gcode(t, gcode, scale, x_fix, y_fix):
                 print("Please enter valid instructions.")
             
             print('-'*40)  # will print the line (with cosmetic changes)
+    close_on_click(t)
 
 
 # In[16]:
@@ -220,9 +222,11 @@ def convert_gcode(t, gcode, scale, x_fix, y_fix):
 # In[19]:
 
 
+#t1 = create_turtle()
+#set_home(t1, -750, -400)
+#close_sim(t1)
 #t1 = resurrect_environment("Click screen when finished to exit")
-#convert_gcode(t1, "output.gcode", 1, 2000, 1200)
-#close_on_click(t1)
+#convert_gcode(t1, "output.gcode", 1)
 
 
 # In[20]:
@@ -230,7 +234,6 @@ def convert_gcode(t, gcode, scale, x_fix, y_fix):
 
 #t1 = resurrect_environment("Click screen when finished to exit")
 #convert_gcode(t1, "output2.gcode", 1, 2000, 1200)
-#close_on_click(t1)
 
 
 # In[21]:
@@ -238,7 +241,6 @@ def convert_gcode(t, gcode, scale, x_fix, y_fix):
 
 #t1 = resurrect_environment("Click screen when finished to exit")
 #convert_gcode(t1, "output4.gcode", 1, 2000, 1200)
-#close_on_click(t1)
 
 
 # In[ ]:

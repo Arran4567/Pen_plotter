@@ -14,11 +14,17 @@ sim = __import__("Simulation")
 
 def turtle_setup():
     t1 = sim.create_turtle()
-    close_sim(t1)
+    sim.close_sim(t1)
     return t1
 
 
-# In[ ]:
+# In[3]:
+
+
+#t1 = turtle_setup()
+
+
+# In[4]:
 
 
 def import_image(filename):
@@ -33,13 +39,13 @@ def import_image(filename):
     return img
 
 
-# In[ ]:
+# In[5]:
 
 
 #import_image("DXF/knot_005.dxf")
 
 
-# In[ ]:
+# In[6]:
 
 
 def open_sim(title):
@@ -47,14 +53,14 @@ def open_sim(title):
     return t
 
 
-# In[ ]:
+# In[7]:
 
 
 def close_sim(t):
     sim.close_sim(t)
 
 
-# In[ ]:
+# In[8]:
 
 
 def calibrate_sim(t, x, y):
@@ -63,23 +69,29 @@ def calibrate_sim(t, x, y):
     y_home = y
 
 
-# In[ ]:
+# In[9]:
 
 
 def move_turtle(t, x, y, scale):
     sim.move_pos(t, x, y, scale)
 
 
-# In[ ]:
+# In[10]:
 
 
-#turtle_setup()
+def draw_output(t, gcode, scale):
+    sim.convert_gcode(t, gcode, scale)
+
+
+# In[11]:
+
+
 #t1 = open_sim("Calibrate")
 #calibrate_sim(t1, -750, -400)
 #close_sim(t1)
 
 
-# In[ ]:
+# In[12]:
 
 
 def view_dxf(file_path):
@@ -87,7 +99,7 @@ def view_dxf(file_path):
     return fig, doc, msp, group
 
 
-# In[ ]:
+# In[13]:
 
 
 def dxf_generate_gcode(file_path, output_path):
@@ -95,12 +107,26 @@ def dxf_generate_gcode(file_path, output_path):
     dxf.output_all_info(msp, output_path)
 
 
-# In[ ]:
+# In[14]:
 
 
 def png_generate_gcode(file_path, accuracy, output_path):
     instructions = png.naive_to_gcode(png.naive_gcode(file_path, accuracy))
     png.output_gcode(instructions, output_path)
+
+
+# In[15]:
+
+
+#png_generate_gcode("Images\\dog.jpg", 0.7, "output.gcode")
+
+
+# In[16]:
+
+
+#dxf_generate_gcode("DXF\\frame.dxf", "output.gcode")
+#t1 = open_sim("Click on the screen to close when finished.")
+#draw_output(t1, "output.gcode", 1)
 
 
 # In[ ]:
