@@ -15,9 +15,18 @@ import gc
 
 x_home = 0
 y_home = 0
+stop = False
 
 
 # In[3]:
+
+
+def set_stop(bool_stop):
+    global stop 
+    stop = bool_stop
+
+
+# In[4]:
 
 
 def create_turtle():
@@ -25,7 +34,7 @@ def create_turtle():
     return t
 
 
-# In[4]:
+# In[5]:
 
 
 def setup_turtle(t, title):
@@ -43,21 +52,21 @@ def setup_turtle(t, title):
     t.speed(10)
 
 
-# In[5]:
+# In[6]:
 
 
 def close_on_click(t):
     t.getscreen().exitonclick()
 
 
-# In[6]:
+# In[7]:
 
 
 def close_sim(t):
     t.getscreen().bye()
 
 
-# In[7]:
+# In[8]:
 
 
 def resurrect_environment(title):
@@ -68,7 +77,7 @@ def resurrect_environment(title):
     return t
 
 
-# In[8]:
+# In[9]:
 
 
 def set_home(t, x, y):
@@ -80,27 +89,27 @@ def set_home(t, x, y):
     y_home = y
 
 
-# In[9]:
+# In[10]:
 
 
 #t1 = create_turtle()
 #setup_turtle(t1, "Calibrate marker")
 
 
-# In[10]:
+# In[11]:
 
 
-#x_home, y_home = set_home(t1, -750, -400)
+#set_home(t1, -750, -400)
 #close_on_click(t1)
 
 
-# In[11]:
+# In[12]:
 
 
 #close_sim(t1)
 
 
-# In[12]:
+# In[13]:
 
 
 def move_pos(t, x, y, scale):
@@ -108,7 +117,7 @@ def move_pos(t, x, y, scale):
     t.setposition((x * scale) + x_home, (y*scale) + y_home)
 
 
-# In[13]:
+# In[14]:
 
 
 def draw_line(t, x, y, scale):
@@ -116,7 +125,7 @@ def draw_line(t, x, y, scale):
     t.setposition((x * scale) + x_home, (y*scale) + y_home)
 
 
-# In[14]:
+# In[15]:
 
 
 def draw_arc(t, x, y, r, start, end, scale):
@@ -135,48 +144,53 @@ def draw_arc(t, x, y, r, start, end, scale):
     t.circle(r_real, extent)
 
 
-# In[15]:
+# In[16]:
 
 
 def convert_gcode(t, gcode, scale):
+    global stop
     with open(gcode, 'r') as fh:
         for line_text in fh.readlines():
-            line = Line(line_text)
-            
-            print(line)  # will print the line (with cosmetic changes)
-            
-            x_substring = float(re.search("X(.*?) ", str(line)).group(1))
-            y_substring = float(re.search("Y(.*?) ", str(line)).group(1))
-            
-            print(x_substring)
-            print(y_substring)
-                
-            if str(line)[0:3] == "G00":
-                print("G00")
-                move_pos(t, x_substring, y_substring, scale)
-            elif str(line)[0:3] == "G01":
-                print("G01")
-                draw_line(t, x_substring, y_substring, scale)
-            elif str(line)[0:3] == "G03":
-                print("G03")
-                r = float(re.search("R(.*?) ", str(line)).group(1))
-                start = float(re.search("S(.*?) ", str(line)).group(1))+90
-                end = float(re.search("E(.*?) ", str(line)).group(1))+90
-                draw_arc(t, x_substring, y_substring, r, start, end, scale)
+            if stop == False:
+                line = Line(line_text)
+
+                print(line)  # will print the line (with cosmetic changes)
+
+                x_substring = float(re.search("X(.*?) ", str(line)).group(1))
+                y_substring = float(re.search("Y(.*?) ", str(line)).group(1))
+
+                print(x_substring)
+                print(y_substring)
+
+                if str(line)[0:3] == "G00":
+                    print("G00")
+                    move_pos(t, x_substring, y_substring, scale)
+                elif str(line)[0:3] == "G01":
+                    print("G01")
+                    draw_line(t, x_substring, y_substring, scale)
+                elif str(line)[0:3] == "G03":
+                    print("G03")
+                    r = float(re.search("R(.*?) ", str(line)).group(1))
+                    start = float(re.search("S(.*?) ", str(line)).group(1))+90
+                    end = float(re.search("E(.*?) ", str(line)).group(1))+90
+                    draw_arc(t, x_substring, y_substring, r, start, end, scale)
+                else:
+                    print("Please enter valid instructions.")
+
+                print('-'*40)  # will print the line (with cosmetic changes)
             else:
-                print("Please enter valid instructions.")
-            
-            print('-'*40)  # will print the line (with cosmetic changes)
+                stop = False
+                close_sim(t)
     close_on_click(t)
 
 
-# In[16]:
+# In[17]:
 
 
 #draw_arc(t, 3.516934, 2.6563950000000003, 0.119156, 270.0, 315.0)
 
 
-# In[17]:
+# In[18]:
 
 
 #def draw_smiley(t):
@@ -213,13 +227,13 @@ def convert_gcode(t, gcode, scale):
 #    t.goto(-67, -40)
 
 
-# In[18]:
+# In[19]:
 
 
 #draw_smiley()
 
 
-# In[19]:
+# In[ ]:
 
 
 #t1 = create_turtle()
@@ -229,14 +243,14 @@ def convert_gcode(t, gcode, scale):
 #convert_gcode(t1, "output.gcode", 1)
 
 
-# In[20]:
+# In[ ]:
 
 
 #t1 = resurrect_environment("Click screen when finished to exit")
 #convert_gcode(t1, "output2.gcode", 1, 2000, 1200)
 
 
-# In[21]:
+# In[ ]:
 
 
 #t1 = resurrect_environment("Click screen when finished to exit")

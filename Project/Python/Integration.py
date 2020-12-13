@@ -110,15 +110,18 @@ def dxf_generate_gcode(file_path, output_path):
 # In[14]:
 
 
-def png_generate_gcode(file_path, accuracy, output_path):
-    instructions = png.naive_to_gcode(png.naive_gcode(file_path, accuracy))
+def png_generate_gcode(file_path, accuracy, output_path, algorithm):
+    if algorithm:
+        instructions = png.naive_to_gcode(png.naive_gcode(file_path, accuracy))
+    else:
+        instructions = png.ms_to_GCode(png.get_ms_contours(file_path, accuracy, 5))
     png.output_gcode(instructions, output_path)
 
 
 # In[15]:
 
 
-#png_generate_gcode("Images\\dog.jpg", 0.7, "output.gcode")
+#png_generate_gcode("Images\\dog.jpg", 0.7, "output.gcode", False)
 
 
 # In[16]:
@@ -129,8 +132,9 @@ def png_generate_gcode(file_path, accuracy, output_path):
 #draw_output(t1, "output.gcode", 1)
 
 
-# In[ ]:
+# In[17]:
 
 
-
+def stop_sim():
+    sim.set_stop(True)
 

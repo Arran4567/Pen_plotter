@@ -205,6 +205,7 @@ def naive_to_gcode(lines):
                 print("%s" % gcode)
                 i=0
             all_instructions.append(gcode)
+    print(all_instructions)
     return all_instructions
 
 
@@ -217,31 +218,6 @@ def naive_to_gcode(lines):
 # # Marching Squares
 
 # In[14]:
-
-
-def get_reference_squares(filename, threshold, increment):
-    data = img_to_gray(import_image(filename))
-    references = []
-    num_rows = len(data)
-    num_cols = len(data[0])
-    important_squares = []
-    print(str(num_rows) + "x" + str(num_cols))
-    for row in range(0, num_rows, increment):
-        for col in range(0, num_cols, increment):
-            if data[row][col] < threshold:
-                important_squares.append([row, col])
-    plt.imshow(data, cmap="gray")
-    plt.show()
-    return important_squares
-
-
-# In[15]:
-
-
-#get_reference_squares("Images/dog.jpg", .5, 5)
-
-
-# In[16]:
 
 
 def get_case(x):
@@ -265,25 +241,33 @@ def get_case(x):
     }.get(x, 16)
 
 
-# In[17]:
+# In[15]:
 
 
 #get_case(str([0,0,0,0]))
 
 
-# In[18]:
+# In[16]:
 
 
 def check_corner(data, row, col, threshold):
     corner = 0
-    if data[row][col] > threshold:
-        corner = 1
+    if row >= len(data) and col >= len(data[0]):
+        row = len(data)-1
+        col = len(data[0])-1
+    elif col >= len(data[0]):
+        col = len(data[0])-1
+    elif row >= len(data):
+        row = len(data)-1
     else:
-        corner = 0
+        if data[row][col] > threshold:
+            corner = 1
+        else:
+            corner = 0
     return corner
 
 
-# In[19]:
+# In[17]:
 
 
 def check_case(data, row_num, col_num, increment, threshold):
@@ -291,130 +275,162 @@ def check_case(data, row_num, col_num, increment, threshold):
     for row, col in [(row_num+i,col_num+j) for i in (0,increment) for j in (0,increment)]:
         if row < len(data) and col < len(data[0]):
             corners.append(check_corner(data, row, col, threshold))
-        elif row > len(data):
+        elif row >= len(data) and col >= len(data[0]):
+            row = len(data)-1
+            col = len(data[0])-1
+            corners.append(check_corner(data, row, col, threshold))
+        elif row >= len(data):
             row = len(data)-1
             corners.append(check_corner(data, row, col, threshold))
-        elif col > len(data[0]):
+        elif col >= len(data[0]):
             col = len(data[0])-1
             corners.append(check_corner(data, row, col, threshold))
     return get_case(str(corners))
 
 
+# In[18]:
+
+
+def calc_interpolant(val1, val2, threshold, increment):
+    interpolant = (val1-threshold)/(val1-val2)
+    return np.round(interpolant*5)
+
+
+# In[19]:
+
+
+def check_square(data, row_num, col_num, increment, threshold):
+    case = check_case(data, row_num, col_num, increment, threshold)
+    corners = []
+    contour = []
+    for row, col in [(row_num+i,col_num+j) for i in (0,increment) for j in (0,increment)]:
+        if row >= len(data) and col >= len(data[0]):
+            row = len(data)-1
+            col = len(data[0])-1
+        elif col >= len(data[0]):
+            col = len(data[0])-1
+        elif row >= len(data):
+            row = len(data)-1
+        corners.append([row, col])
+    if case == 1 or case == 14:
+        left_interpolant = calc_interpolant(data[corners[0][0]][corners[0][1]], data[corners[2][0]][corners[2][1]], threshold, increment)
+        bottom_interpolant = calc_interpolant(data[corners[2][0]][corners[2][1]], data[corners[3][0]][corners[3][1]], threshold, increment)
+        contour.append([corners[0][0] + left_interpolant, corners[0][1], corners[2][0], corners[2][1] + bottom_interpolant])
+    elif case == 2 or case == 13:
+        bottom_interpolant = calc_interpolant(data[corners[2][0]][corners[2][1]], data[corners[3][0]][corners[3][1]], threshold, increment)
+        right_interpolant = calc_interpolant(data[corners[1][0]][corners[1][1]], data[corners[3][0]][corners[3][1]], threshold, increment)
+        contour.append([corners[2][0], corners[2][1] + bottom_interpolant, corners[1][0] + right_interpolant, corners[1][1]])
+    elif case == 3 or case == 12:
+        left_interpolant = calc_interpolant(data[corners[0][0]][corners[0][1]], data[corners[2][0]][corners[2][1]], threshold, increment)
+        right_interpolant = calc_interpolant(data[corners[1][0]][corners[1][1]], data[corners[3][0]][corners[3][1]], threshold, increment)
+        contour.append([corners[0][0] + left_interpolant, corners[0][1], corners[1][0] + right_interpolant, corners[1][1]])
+    elif case == 4 or case == 11:
+        top_interpolant = calc_interpolant(data[corners[0][0]][corners[0][1]], data[corners[1][0]][corners[1][1]], threshold, increment)
+        right_interpolant = calc_interpolant(data[corners[1][0]][corners[1][1]], data[corners[3][0]][corners[3][1]], threshold, increment)
+        contour.append([corners[0][0], corners[0][1] + top_interpolant, corners[1][0] + right_interpolant, corners[1][1]])
+    elif case == 5 or case == 10:
+        top_interpolant = calc_interpolant(data[corners[0][0]][corners[0][1]], data[corners[1][0]][corners[1][1]], threshold, increment)
+        left_interpolant = calc_interpolant(data[corners[0][0]][corners[0][1]], data[corners[2][0]][corners[2][1]], threshold, increment)
+        bottom_interpolant = calc_interpolant(data[corners[2][0]][corners[2][1]], data[corners[3][0]][corners[3][1]], threshold, increment)
+        right_interpolant = calc_interpolant(data[corners[1][0]][corners[1][1]], data[corners[3][0]][corners[3][1]], threshold, increment)
+        contour.append([corners[0][0], corners[0][1] + top_interpolant, corners[0][0] + left_interpolant, corners[0][1]])
+        contour.append([corners[2][0], corners[2][1] + bottom_interpolant, corners[1][0] + right_interpolant, corners[1][1]])
+    elif case == 6 or case == 9:
+        top_interpolant = calc_interpolant(data[corners[0][0]][corners[0][1]], data[corners[1][0]][corners[1][1]], threshold, increment)
+        bottom_interpolant = calc_interpolant(data[corners[2][0]][corners[2][1]], data[corners[3][0]][corners[3][1]], threshold, increment)
+        contour.append([corners[0][0], corners[0][1] + top_interpolant, corners[2][0], corners[2][1] + bottom_interpolant])
+    elif case == 7 or case == 8:
+        top_interpolant = calc_interpolant(data[corners[0][0]][corners[0][1]], data[corners[1][0]][corners[1][1]], threshold, increment)
+        left_interpolant = calc_interpolant(data[corners[0][0]][corners[0][1]], data[corners[2][0]][corners[2][1]], threshold, increment)
+        contour.append([corners[0][0], corners[0][1] + top_interpolant, corners[0][0] + left_interpolant, corners[0][1]])
+    return contour
+
+
 # In[20]:
 
 
-def check_square(row_num, col_num, data, increment, threshold):
-    corners = []
-    contours = []
-    case = 0
-    for row, col in [(row_num+i,col_num+j) for i in (0,increment) for j in (0,increment)]:
-        try:
-            #This is for adjacent squares in bounds
-            if data[row][col] > threshold:
-                interpolant = np.round((data[row_num][col_num]/data[row][col])*increment)
-                if row > row_num:
-                    contours.append([row_num + interpolant, col_num])
-                elif row < row_num:
-                    contours.append([row_num - interpolant, col_num])
-                elif col > col_num:
-                    contours.append([row_num, col_num + interpolant])
-                elif col < col_num:
-                    contours.append([row_num, col_num - interpolant])
-                else:
-                    print("Something went wrong")
-        except IndexError:
-             #This is for if the adjacent square is out of bounds
-            print(row)
-            print(col)
-            contours.append([row, col])
-            print("This cell is out of bounds")
-            print("Don't worry this may happen, but needs to be dealt with.")
-            print("-"*40)
-        except ZeroDivisionError:
-             #This is for if the adjacent square is Pure black
-            print(row)
-            print(col)
-            print("This SHOULD never happen")
-            print("-"*40)
-        except:
-            #This is to catch any other error
-            print("Unexpected error:", sys.exc_info()[0])
-            print("-"*40)
-        case = get_case(str(corners))
-        res = [] 
-        for i in contours:
-            if i not in res:
-                res.append(i)
-    return res
+#print(check_case(gray_img, 145, 140, 5, 0.7))
+#print(check_square(gray_img, 145, 140, 5, 0.7))
 
 
 # In[21]:
 
 
-#print(check_square(25, 190, gray_img, 5, 0.5))
-#check_case(gray_img, 25, 190, 5, 0.5)
+def get_reference_squares(data, threshold, increment):#
+    references = []
+    num_rows = len(data)
+    num_cols = len(data[0])
+    important_squares = []
+    print(str(num_rows) + "x" + str(num_cols))
+    for row in range(0, num_rows, increment):
+        for col in range(0, num_cols, increment):
+            if check_case(data, row, col, increment, threshold) != 15 and check_case(data, row, col, increment, threshold) != 0:
+                important_squares.append([row, col])
+    plt.imshow(data, cmap="gray")
+    xs = [x[1] for x in important_squares]
+    ys = [x[0] for x in important_squares]
+    plt.scatter(xs, ys, 0.5)
+    plt.show()
+    return important_squares
 
 
 # In[22]:
 
 
-def get_ms_contours(filename, threshold, increment, marker_size):
-    refrences = get_reference_squares(filename, threshold, increment)
-    x = []
-    y = []
-    data = img_to_gray(import_image(filename))
-    squares = []
-    contours = []
-    for coord in refrences:
-        contours.append([check_case(data, coord[0], coord[1], increment, threshold), check_square(coord[0], coord[1], data, increment, threshold)])
-    for contour in contours:
-        case = contour[0]
-        coords = contour[1]
-        for coord in coords:
-            x.append(coord[1])
-            y.append(coord[0])
-    plt.scatter(x, y, s = marker_size)
-    return contours
+#get_reference_squares(np.flipud(img_to_gray(import_image("Images/smile.png"))), .5, 5)
 
 
 # In[23]:
 
 
-#get_ms_contours("Images/gray_test.png", .7, 5, 5)
+def get_ms_contours(filename, threshold, increment):
+    data = np.flipud(img_to_gray(import_image(filename)))
+    references = get_reference_squares(data, threshold, increment)
+    x = []
+    y = []
+    squares = []
+    contours = []
+    for coord in references:
+        square = check_square(data, coord[0], coord[1], increment, threshold)
+        print(square)
+        contours.append(square)
+    return contours
 
-
-# # Define GCODE
 
 # In[24]:
 
 
-def get_GCode(contours):
-    i = 0
-    all_instructions = []
-    to_coords = lambda coords: {'X': coords[1], 'Y': coords[0]}
-    for coords in contours:
-        if i == 0:
-            gcode = GCodeRapidMove(**to_coords(coords))
-            print("%s" % gcode)
-            i=1
-        else:
-            gcode = GCodeLinearMove(**to_coords(coords))
-            print("%s" % gcode)
-            i=0
-        all_instructions.append(gcode)
-        print("-" * 40)
-    return all_instructions
+#print(get_ms_contours("Images/gray_test.png", .7, 5))
 
 
 # In[25]:
 
 
-#gcodes = get_GCode(get_ms_contours("Images/gray_test.png", .7, 5, 1))
+def ms_to_GCode(squares):
+    i = 0
+    all_instructions = []
+    to_coords = lambda coords: {'X': coords[1], 'Y': coords[0]}
+    for contours in squares:
+        for contour in contours:
+            initial_coords = [contour[0], contour[1]]
+            final_coords = [contour[2], contour[3]]
+            initial_coords_gcode = GCodeRapidMove(**to_coords(initial_coords))
+            final_coords_gcode = GCodeLinearMove(**to_coords(final_coords))
+            all_instructions.append(initial_coords_gcode)
+            all_instructions.append(final_coords_gcode)
+    return all_instructions
+
+
+# In[26]:
+
+
+#gcodes = ms_to_GCode(get_ms_contours("Images/dog.jpg", .7, 5))
+#print(gcodes)
 
 
 # # Output GCODE to file
 
-# In[26]:
+# In[27]:
 
 
 def output_gcode(all_instructions, filename):
@@ -425,16 +441,16 @@ def output_gcode(all_instructions, filename):
     File_object.close()
 
 
-# In[27]:
+# In[28]:
 
 
 #output_gcode(naive_to_gcode(naive_gcode("Images/smile.png", 0.7)), "output2.gcode")
 
 
-# In[28]:
+# In[29]:
 
 
-#output_gcode(get_GCode(get_ms_contours("Images/gray_test.png", .7, 5, 1)), "output4.gcode")
+#output_gcode(ms_to_GCode(get_ms_contours("Images/dog.jpg", .7, 5)), "output.gcode")
 
 
 # In[ ]:
