@@ -1,41 +1,64 @@
 \chapter{Sprint 1 - Background Research}
 	\label{chap:background}
 		
-	Before starting the project a lot of background research was required, as there was no prior knowledge of GCODE, DXF files or safety critical systems. This chapter outlines researched topics required to gain enough understanding to begin the project and what was learnt during the research.
+	Before starting the project a lot of background research is required, as there is no prior knowledge of GCODE, DXF files or safety critical systems. This chapter outlines researched topics required to gain enough understanding to begin the project and what is learnt during the research.
 
 	\section{Safety Critical Systems}
-		The first section which required research was safety critical systems. This was the main topic of the dissertation and there was no prior knowledge of the topic going into the project. This meant that a lot of prior research was required in order to ensure the system followed a safety critical level design, implementation and testing.
-		
-		
+		\label{sec:safety}
+
+		The first section which requires research is safety critical systems. This is the main topic of the dissertation and there is no prior knowledge of the topic going into the project. This means that a lot of prior research is required in order to ensure the system follows a safety critical level design, implementation and testing.
+
+		Safety is a not usually talked about in conventional computer science. It isn't related to reliability or security but is its own quality. Safety is the act of preventing of accidents or loss. These can come in the forms of injuries, deaths or damage to equipment. Alongside the accidents, the main concepts to consider with safety are the risks, hazards, failures, errors and faults. The risk is a combination of probability of an accident occurring and the severity of the accident should it occur. The equation $risk = p(a) * s(a)$ is usually used as a guideline for the risk of an accident, although quantifying severity can be difficult in some unforeseen cases. Hazards are the criteria that must be fulfilled for an accident to take place. When an accident occurs, the hazard is usually very minor, but minor hazards have the ability to cause accidents of major severity. A failure is when a component of the system fails randomly due to a fault. An error is when a component fails due to a predictable fault in the system. A fault is either an error or a failure.
+			
+			Safety is far more expensive to add to a system as an afterthought than it is to incorporate into the design and implementation phase during the entire development of the system. There is an eight-step guide to safety design and implementation:
+			\begin{enumerate}
+				\item Identify Hazards
+				\item Determine Risks
+				\item Define Safety Measures
+				\item Create Safe Requirements
+				\item Create Safe Designs
+				\item Implement Following Safe Designs
+				\item Review Previous Safety Steps
+				\item Test Extensively
+			\end{enumerate}
+			Stages one through 3 are known as the safety analysis. These are the steps which require most forethought, as all following steps will be ensuring the chance of an accident occurring from all hazards stated in these steps are minimised. As the project is now using a simulation, instead of a robot, the hazards have already been reduced. However, all forethought will be done with an actual robot in mind, so some hazards may seem unnecessary to the final product.
+
+			I will be addressing each of the eight stages in their respective sprint, before beginning any implementation.
+			
+
 	\section{GCODE}
 		\label{sec:gcode}
 
-		The second topic that required research was GCODE
-
-		The internet is big \cite{sizeofinternet}. Knowing how to phrase a question to a search engine is therefore an invaluable skill. If the request is simple enough, even a poorly structured query will likely return usable results. For more difficult to find resources you can leverage the language of the search engine to gather relevant papers and resources for your research more efficiently. 
+		The second topic that requires research is GCODE. Prior to beginning the project, GCODE was an unfamiliar language as we had minimal knowledge of CAD. When looking through the many instructions the language consisted of, some instructions can be chosen as relevant to this project:
+			\begin{itemize}
+				\item G0 - Rapid Movement to specified co-ordinates. This will be useful for moving the pen when it isn't meant to be drawing. This command is used in the format: G0 X1 Y1
+				\item G1 - Linear Movement to specified co-ordinates. This will be useful for moving the pen when it's meant to be drawing. This command is used in the format: G1 X1 Y1
+				\item G2 - Linear movement to specified co-ordinates in a clockwise arc. The arc is centred around 2 other co-ordinates. This command is used in the format: G2 X1 Y1 I1 J1
+				\item G3 - Linear movement to specified co-ordinates in a counter-clockwise arc. The arc is centred around 2 other co-ordinates. This command is used in the format: G3 X1 Y1 I1 J1
+				\item M0 - Program Stop
+				\item M1 - Optional Stop
+				\item M2 - End of Program
+				\item F - Feed Rate, or in the case of the pen plotter, Movement Speed.
+			\end{itemize}
 		
-		% An example of how to center a passage of text, control local fontsize, 
-		% and create a properly formatted and clickable URL.
-		\begin{center}
-		{\small \url{https://www.gwern.net/Search}}
-		\end{center}
+		There are many more GCODE instructions, however they seem unnecessary to the project at this point in time.
 		
-		``Internet Search Tips'' \cite{gwern} provides an excellent review of methods and tips for scouring the internet for hard to find resources. You will also be less likely to get caught behind journal paywalls when working remotely without a tunnel as your queries can be made to look for raw pdfs that are often released by the authors directly.
-			
-	\section{Organizing your citations in BibTeX}       
-		\label{sec:resources_bibtex}
+		In order to ensure the GCODE created is always created in an industry standard format we will be using a python library called pygcode.
 	
-		BibTeX is a language for specifying resource citations. Every time you access and read an academic paper, take code from an online repository, or source the media such as images from existing works you should create a BibTeX entry in a file that you keep throughout your research. Software such as Mendeley \cite{mendeley} can help automate the process of building your BibTeX library of citations. 
-		
-		\lstinputlisting[label={lst:bibtex}, caption={An example BibTeX entry for an academic paper published in conference proceedings \cite{kaj86}.}]{./listings/example_bibtex.bib}
-		
-		The BibTeX code listing above (listing \ref{lst:bibtex}) shows an example of how to cite an academic paper, in this case one of the central papers in Computer Graphics research. The key \textbf{kaj86} is an arbitrary name chosen as a meaningful identifier for the resource. In the document text we can call on this resource as an inline citation using the LaTeX command \lstinline|\cite{kaj86}| which produces \cite{kaj86} at the location it is called. As long as a citation has been used at least once somewhere within the document then a formatted full citation will be created in the bibliography at the end of the document with the same citation number that is shown inline.
-		
-		It is considerably easier to be disciplined in methodically taking note of the resources you access and make use of as you access them, than it is to try and hunt them all down again at the time you need to write about them in your document. Invest time in being organized and consistent up front and it will be easier when you come to write up.
-		
 	\section{DXF}
-		Usually you would not put the URL of the resource you are citing directly in the text like is done previously in section \ref{sec:google_fu}. The citation for the resource \cite{gwern} is sufficient to reference it within the text given that full details of its location are then kept neatly within the bibliography at the end of the document. 
+		\label{sec:dxf}
+
+		At a basic level, DXF files are separated into features called entities. These entities define many things, such as the shape of an object, the thickness, the start and end co-ordinates, the angle at which it begins and ends, and much more.
 		
-		In normal usage the purpose of a citation is not to direct the reader away from your thesis, but to justify and back up assertions you are making about the state of the domain. If a reader questions your assertions then they can follow the rabbit hole of papers which will likely also make and justify assertions with even earlier papers from the literature. 
-		
-		In the above case the intention is for the reader of this template to actually go to that resource and read what it has to say directly. The link is therefore shown clearly within the main text to indicate that the reader should visit it. This as opposed to wanting the reader to purely acknowledge that the facts which are within the resource legitimize the points made in this document, in which case a simple inline citation is the best way to back up your assertions. Section \ref{sec:typesetting_figures_citation} specifically touches on the best practice for how to cite images which you are importing from existing work. 
+		As we are only creating a 2D pen plotter, we will be minimising the number of entities we use in order to maintain simplicity and minimise errors. The entities we will use for this project will be "LINE" which is a straight line from one co-ordinate to another, "ARC" which is a curved line, "POLYLINE" which is a combination of the 2 previously stated entities and "CIRCLE" which is a 360 degree arc defined by its centre point and radius.
+
+		In order to deal with these entities, we will be using a library called ezdxf. This will help simplify the code we produce and means that any changes in the DXF structure can be updated in the program by updating the library version.
+
+	\section{Rasterized Images}
+		\label{sec:vectorization}
+
+		In order to covert rasterized images into GCODE, the image will first need to be converted into grayscale in order to allow for a single value to govern what is considered a desired part of the image and what is not. This will be the black value of the image, a number between 0 and 1. The user will then be given the option of drawing the contours of the image, or the entire image of black value greater than the given threshold. In order to find the contours of the image, the marching squares algorithm will be used.
+		\subsection{Contours - Marching Squares}
+			Marching squares is an image analysis algorithm, used to determine the contours. This is done by splitting the image into small squares and finding the black value of the corner of each square, these values are then compared to the threshold provided by the user to check if the corner is within an object or not. These squares can then be categorized into 16 unique cases, defining how the contours travel through each square. Once the case of each square is determined, a form of interpolation is required to approximate the co-ordinate at which the contour crosses the boundaries of the squares. This is usually done, and will also in the case of this project, using linear interpolation. The main issue with this algorithm is the large amount of approximation and that 2 of the cases contain ambiguity as to the orientation of the contour. This would not cause any real-world problem should the program require the objects remain close, but may cause issues when drawing the images.
+		\subsection{Entire Image}
+			In order to draw the entire image, an algorithm will be required to read the image row by row and convert the lines of pixels with a black value within the threshold of the user to line GCODE. This will probably be done with a self-defined algorithm.
