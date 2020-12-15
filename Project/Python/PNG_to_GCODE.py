@@ -11,7 +11,7 @@ import sys
 import skimage 
 import numpy as np
 import matplotlib.pyplot as plt
-from pygcode import *
+from pygcode import * #pygcode v0.2.1
 from skimage import measure
 from skimage import io
 from skimage import data
@@ -24,44 +24,10 @@ from PIL import Image
 # In[2]:
 
 
-class Contour:
-    def __init__(self, start_row, start_col, end_row, end_col):
-        self.start_row = start_row
-        self.start_col = start_col
-        self.end_row = end_row
-        self.end_col = end_col
-        
-    def get_start(self):
-        return self.start_row, self.start_col
-    
-    def get_end(self):
-        return self.end_row, self.end_col
-        
-    def set_start(self, r, c):
-        self.start_row = r
-        self.start_col = c
-    
-    def set_end(self, r, c):
-        self.end_row = r
-        self.end_col = c
-
-
-# In[3]:
-
-
-class Square:
-    def __init__(self, top_left, contours):
-        self.case = case
-        self.top_left = top_left
-        self.contours = contours
-
-
-# In[4]:
-
-
+#Imports the image with some basic validation
 def import_image(path):
     file = os.path.join(path)
-    img = ""
+    img = []
     try:
         img = io.imread(file)
     except:
@@ -69,7 +35,7 @@ def import_image(path):
     return img
 
 
-# In[5]:
+# In[3]:
 
 
 #image = import_image("Images/dog.jpg")
@@ -77,9 +43,10 @@ def import_image(path):
 
 # # Grayscale Image
 
-# In[6]:
+# In[4]:
 
 
+#Converts the image to grayscale
 def img_to_gray(original):
     grayscale = rgb2gray(original)
     fig, axes = plt.subplots(1, 1, figsize=(4, 4))
@@ -90,47 +57,18 @@ def img_to_gray(original):
     return grayscale
 
 
-# In[7]:
+# In[5]:
 
 
 #gray_img = img_to_gray(import_image("Images/dog.jpg"))
 
 
-# # Find Contours
-
-# In[8]:
-
-
-def find_contours(image, accuracy):
-    img = np.flipud(image)
-    
-    # Find contours at a constant value defined by parameter accuracy
-    contours = measure.find_contours(img, accuracy)
-    
-    # Display the image and plot all contours found
-    fig, ax = plt.subplots()
-
-    for n, contour in enumerate(contours):
-        ax.plot(contour[:, 1], contour[:, 0], linewidth=1)
-
-    ax.axis('image')
-    plt.show()
-    print(contours)
-    return contours
-
-
-# In[9]:
-
-
-#contours = find_contours(gray_img, .3)
-#len(contours)
-
-
 # # Naive Approach
 
-# In[10]:
+# In[6]:
 
 
+#Loops through each row finding lines of black pixels
 def naive_gcode(image, threshold):
     data = img_to_gray(import_image(image))
     
@@ -180,15 +118,16 @@ def naive_gcode(image, threshold):
     return lines
 
 
-# In[11]:
+# In[7]:
 
 
 #naive_gcode("Images/gray_test.png", 0.7)
 
 
-# In[12]:
+# In[8]:
 
 
+#Converts lines to gcode
 def naive_to_gcode(lines):
     all_instructions = []
     num_rows = len(lines)
@@ -209,7 +148,7 @@ def naive_to_gcode(lines):
     return all_instructions
 
 
-# In[13]:
+# In[9]:
 
 
 #naive_to_gcode(naive_gcode("Images/gray_test.png", 0.7))
@@ -217,9 +156,10 @@ def naive_to_gcode(lines):
 
 # # Marching Squares
 
-# In[14]:
+# In[10]:
 
 
+#Defines the 16 cases of marching squares
 def get_case(x):
     return {
         str([0,0,0,0]): 0,
@@ -241,15 +181,16 @@ def get_case(x):
     }.get(x, 16)
 
 
-# In[15]:
+# In[11]:
 
 
 #get_case(str([0,0,0,0]))
 
 
-# In[16]:
+# In[12]:
 
 
+#Determines whether a corner is within an object or not
 def check_corner(data, row, col, threshold):
     corner = 0
     if row >= len(data) and col >= len(data[0]):
@@ -267,9 +208,10 @@ def check_corner(data, row, col, threshold):
     return corner
 
 
-# In[17]:
+# In[13]:
 
 
+#Determines the case or a given square
 def check_case(data, row_num, col_num, increment, threshold):
     corners = []
     for row, col in [(row_num+i,col_num+j) for i in (0,increment) for j in (0,increment)]:
@@ -288,21 +230,24 @@ def check_case(data, row_num, col_num, increment, threshold):
     return get_case(str(corners))
 
 
-# In[18]:
+# In[14]:
 
 
+#Calculates the interpolant for a contour
 def calc_interpolant(val1, val2, threshold, increment):
     interpolant = (val1-threshold)/(val1-val2)
     return np.round(interpolant*5)
 
 
-# In[19]:
+# In[15]:
 
 
+#Finds the start and end co-ordinates of the contours in a given square
 def check_square(data, row_num, col_num, increment, threshold):
     case = check_case(data, row_num, col_num, increment, threshold)
     corners = []
     contour = []
+    
     for row, col in [(row_num+i,col_num+j) for i in (0,increment) for j in (0,increment)]:
         if row >= len(data) and col >= len(data[0]):
             row = len(data)-1
@@ -312,6 +257,7 @@ def check_square(data, row_num, col_num, increment, threshold):
         elif row >= len(data):
             row = len(data)-1
         corners.append([row, col])
+    
     if case == 1 or case == 14:
         left_interpolant = calc_interpolant(data[corners[0][0]][corners[0][1]], data[corners[2][0]][corners[2][1]], threshold, increment)
         bottom_interpolant = calc_interpolant(data[corners[2][0]][corners[2][1]], data[corners[3][0]][corners[3][1]], threshold, increment)
@@ -346,16 +292,17 @@ def check_square(data, row_num, col_num, increment, threshold):
     return contour
 
 
-# In[20]:
+# In[16]:
 
 
 #print(check_case(gray_img, 145, 140, 5, 0.7))
 #print(check_square(gray_img, 145, 140, 5, 0.7))
 
 
-# In[21]:
+# In[17]:
 
 
+#Finds all squares which contain at least one contour
 def get_reference_squares(data, threshold, increment):#
     references = []
     num_rows = len(data)
@@ -374,15 +321,16 @@ def get_reference_squares(data, threshold, increment):#
     return important_squares
 
 
-# In[22]:
+# In[18]:
 
 
 #get_reference_squares(np.flipud(img_to_gray(import_image("Images/smile.png"))), .5, 5)
 
 
-# In[23]:
+# In[19]:
 
 
+#Gets the contours of the entire image
 def get_ms_contours(filename, threshold, increment):
     data = np.flipud(img_to_gray(import_image(filename)))
     references = get_reference_squares(data, threshold, increment)
@@ -397,15 +345,16 @@ def get_ms_contours(filename, threshold, increment):
     return contours
 
 
-# In[24]:
+# In[20]:
 
 
 #print(get_ms_contours("Images/gray_test.png", .7, 5))
 
 
-# In[25]:
+# In[21]:
 
 
+#Converts contours to gcode
 def ms_to_GCode(squares):
     i = 0
     all_instructions = []
@@ -421,7 +370,7 @@ def ms_to_GCode(squares):
     return all_instructions
 
 
-# In[26]:
+# In[22]:
 
 
 #gcodes = ms_to_GCode(get_ms_contours("Images/dog.jpg", .7, 5))
@@ -430,9 +379,10 @@ def ms_to_GCode(squares):
 
 # # Output GCODE to file
 
-# In[27]:
+# In[23]:
 
 
+#Saves the gcode to an output file
 def output_gcode(all_instructions, filename):
     File_object = open(filename,"w")
     for gcode in all_instructions:
@@ -441,13 +391,13 @@ def output_gcode(all_instructions, filename):
     File_object.close()
 
 
-# In[28]:
+# In[24]:
 
 
-#output_gcode(naive_to_gcode(naive_gcode("Images/smile.png", 0.7)), "output2.gcode")
+#output_gcode(naive_to_gcode(naive_gcode("Images/gray_test.png", 0.7)), "output.gcode")
 
 
-# In[29]:
+# In[25]:
 
 
 #output_gcode(ms_to_GCode(get_ms_contours("Images/dog.jpg", .7, 5)), "output.gcode")

@@ -6,12 +6,12 @@
 # In[1]:
 
 
-import ezdxf
+import ezdxf #ezdxf v0.13
 import matplotlib.pyplot as plt
 from ezdxf.addons.drawing.matplotlib_backend import MatplotlibBackend
 from ezdxf.addons.drawing import RenderContext, Frontend
 from ezdxf.groupby import groupby
-from pygcode import *
+from pygcode import * #pygcode v0.2.1
 
 
 # # Import DXF File and Create Image
@@ -20,18 +20,21 @@ from pygcode import *
 
 
 def get_dxf(file_loc):
+    
+    #Reads in the dxf file
     doc = ezdxf.readfile(file_loc)
     msp = doc.modelspace()
     group = groupby(entities=msp, dxfattrib='layer')
     
+    #Produces a preview image
     layout = doc.layouts.get('Model')
-    fig = plt.figure()
-    ax = fig.add_axes([0, 0, 1, 1])
-    ctx = RenderContext(doc)
-    out = MatplotlibBackend(ax)
-    Frontend(ctx, out).draw_layout(layout, finalize=True)
-    out.finalize()
-    fig.savefig('Images/Outputs/dxf_output.png', dpi=600)
+    figure = plt.figure()
+    axis = fig.add_axes([0, 0, 1, 1])
+    context = RenderContext(doc)
+    output = MatplotlibBackend(ax)
+    Frontend(context, output).draw_layout(layout, finalize=True)
+    output.finalize()
+    figure.savefig('Images/Outputs/dxf_output.png', dpi=600)
     
     return fig, doc, msp, group
 
@@ -47,6 +50,7 @@ def get_dxf(file_loc):
 # In[4]:
 
 
+#Print statements to help understand the outputs of ezdxf
 def print_line(e):
     print("LINE:")
     print("start point: %s" % e.dxf.start)
@@ -56,6 +60,7 @@ def print_line(e):
 # In[5]:
 
 
+#Print statements to help understand the outputs of ezdxf
 def print_arc(e):
     print("ARC:")
     print("start point: %s" % e.start_point)
@@ -68,6 +73,7 @@ def print_arc(e):
 # In[6]:
 
 
+#Print statements to help understand the outputs of ezdxf
 def print_circle(e):
     print("Circle:")
     print("centre point: %s" % e.dxf.center)
@@ -77,6 +83,7 @@ def print_circle(e):
 # In[7]:
 
 
+#Print statements to help understand the outputs of ezdxf
 def print_poly(e):
     print("POLYLINE:")
     print("THIS POLYLINE CONTAINS:\n")
@@ -85,12 +92,15 @@ def print_poly(e):
             print_line(entity)
         elif entity.dxftype() == 'ARC':
             print_arc(entity)
+        else:
+            print("Unknown entity")
     print('-'*40)
 
 
 # In[8]:
 
 
+#Print statements to help understand the outputs of ezdxf
 def list_entities(group):
     for layer, entities in group.items():
         print(f'Layer "{layer}" contains following entities:')
@@ -108,6 +118,7 @@ def list_entities(group):
 # In[10]:
 
 
+#Print statements to help understand the outputs of ezdxf
 def print_all_info(msp):
     for e in msp:
         if e.dxftype() == 'LINE':
@@ -118,6 +129,8 @@ def print_all_info(msp):
             print_circle(e)
         elif e.dxftype() == 'POLYLINE':
             print_poly(e)
+        else:
+            print("Unknown entity")
 
 
 # In[11]:
@@ -131,6 +144,7 @@ def print_all_info(msp):
 # In[12]:
 
 
+#Converts a dxf LINE entity to gcode instructions
 def line_to_gcode(e):
     x_start = e.dxf.start[0]
     y_start = e.dxf.start[1]
@@ -146,6 +160,7 @@ def line_to_gcode(e):
 # In[13]:
 
 
+#Converts a dxf ARC entity to gcode instructions
 def arc_to_gcode(e):
     x_start = str(e.start_point[0])
     y_start = str(e.start_point[1])
@@ -161,6 +176,7 @@ def arc_to_gcode(e):
 # In[14]:
 
 
+#Converts a dxf CIRCLE entity to gcode instructions
 def circle_to_gcode(e):
     x_center = e.dxf.center[0]
     y_center = e.dxf.center[1]
@@ -181,6 +197,7 @@ def circle_to_gcode(e):
 # In[15]:
 
 
+#Converts a dxf POLYLINE entity to gcode instructions
 def poly_to_gcode(e):
     gcodes =[]
     for entity in e.virtual_entities():
@@ -188,10 +205,12 @@ def poly_to_gcode(e):
             gcode = line_to_gcode(entity)
             for g in gcode:
                 gcodes.append(str(g))
-        if entity.dxftype() == 'ARC':
+        elif entity.dxftype() == 'ARC':
             gcode = arc_to_gcode(entity)
             for g in gcode:
                 gcodes.append(str(g))
+        else:
+            print("Unknown entity")
     return gcodes
 
 
@@ -200,6 +219,8 @@ def poly_to_gcode(e):
 # In[16]:
 
 
+#Loops through all entities in the dxf file and converts each entity to the corresponding gcode instructions
+#The gcode is then saved to an output file
 def output_all_info(msp, filename):
     all_instructions = []
     gcodes = []
@@ -208,18 +229,19 @@ def output_all_info(msp, filename):
             gcode = line_to_gcode(e)
             for g in gcode:
                 all_instructions.append(str(g))
-        if e.dxftype() == 'ARC':
+        elif e.dxftype() == 'ARC':
             gcode = arc_to_gcode(e)
             for g in gcode:
                 all_instructions.append(str(g))
-        if e.dxftype() == 'CIRCLE':
+        elif e.dxftype() == 'CIRCLE':
             gcode = circle_to_gcode(e)
             for g in gcode:
                 all_instructions.append(str(g))
-        if e.dxftype() == 'POLYLINE':
+        elif e.dxftype() == 'POLYLINE':
             gcodes = poly_to_gcode(e)
             all_instructions.extend(gcodes)
-    
+        else:
+            print("Unknown entity")
     File_object = open(filename,"w")
     for gcode in all_instructions:
         print(gcode)
